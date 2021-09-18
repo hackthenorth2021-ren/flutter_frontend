@@ -121,9 +121,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
-    Home(),
-    Home(),
-    TakePictureScreen(),
+    RecipePage(),
+    RecipePage(),
+    TakePictureScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -138,29 +138,8 @@ class _HomeState extends State<Home> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: SafeArea(
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-            const ListTile(
-              //leading: Icon(Icons.image),
-              title: Text(
-                "Hello Douglas",
-                style: TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              subtitle: Text(
-                  "Vestibulum quis ligula nec neque ornare feugiat. Nunc condimentum, nunc su"),
-            ),
-            _searchBar(),
-            Expanded(
-              child: ListView(
-                //shrinkWrap: true,
-                children: [RecipeCard(), RecipeCard(), RecipeCard()],
-              ),
-            )
-          ])),
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -180,6 +159,46 @@ class _HomeState extends State<Home> {
         selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
       ),
+    );
+  }
+}
+
+class RecipePage extends StatefulWidget {
+  RecipePage({Key? key}) : super(key: key);
+
+  @override
+  _RecipePageState createState() => _RecipePageState();
+}
+
+class _RecipePageState extends State<RecipePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
+      body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const ListTile(
+              //leading: Icon(Icons.image),
+              title: Text(
+                "Hello Douglas",
+                style: TextStyle(
+                  fontSize: 35,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              subtitle: Text(
+                  "Vestibulum quis ligula nec neque ornare feugiat. Nunc condimentum, nunc su"),
+            ),
+            _searchBar(),
+            Expanded(
+              child: ListView(
+                //shrinkWrap: true,
+                children: [RecipeCard(), RecipeCard(), RecipeCard()],
+              ),
+            )
+          ]),
     );
   }
 }

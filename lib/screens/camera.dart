@@ -33,8 +33,9 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         // Define the resolution to use.
         ResolutionPreset.medium,
       );
+
+      _initializeControllerFuture = _controller.initialize();
     });
-    _initializeControllerFuture = _controller.initialize();
   }
 
   @override
