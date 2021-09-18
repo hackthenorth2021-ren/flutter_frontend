@@ -8,3 +8,8 @@ const kIsabel = Color(0xFFF4EDEA);
 const kOrange = Color(0xFFF4D1AE);
 
 const kHintStyle = TextStyle(fontWeight: FontWeight.w300, fontFamily: 'roboto');
+const kMenuText = TextStyle(
+  fontSize: 24,
+  fontWeight: FontWeight.w100,
+  color: kOpal,
+);
