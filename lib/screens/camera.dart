@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_frontend/components/constants.dart';
+import 'loading_image_screen.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
@@ -32,7 +34,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // Get a specific camera from the list of available cameras.
       widget.camera,
       // Define the resolution to use.
-      ResolutionPreset.low,
+      ResolutionPreset.high,
     );
 
     _initializeControllerFuture = _controller.initialize();
@@ -76,6 +78,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
             // Attempt to take a picture and get the file `image`
             // where it was saved.
+            _controller.setFlashMode(FlashMode.off);
             final image = await _controller.takePicture();
 
             var file = File(image.path);
@@ -113,12 +116,49 @@ class DisplayPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kBGreen,
       appBar: AppBar(
-          title: const Text('Display the Picture'),
+          backgroundColor: kBGreen,
+          title: const Center(child: Text('Display the Picture')),
           automaticallyImplyLeading: false),
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
-      body: Image.file(File(imagePath)),
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.file(File(imagePath)),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'Go back',
+                        style: kMenuText,
+                      )),
+                  TextButton(
+                      onPressed: () {
+                        // call api stuff
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoadingScreen()));
+                      },
+                      child: Text(
+                        'Export',
+                        style: kMenuText,
+                      ))
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
