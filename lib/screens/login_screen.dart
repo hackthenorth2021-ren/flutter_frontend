@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:email_validator/email_validator.dart';
@@ -20,8 +21,14 @@ const users = {
 };
 
 class LoginScreen extends StatelessWidget {
-  LoginScreen({Key? key}) : super(key: key);
+  final CameraDescription camera;
 
+  LoginScreen({
+    Key? key,
+    required this.camera,
+  }) : super(key: key);
+
+  static const String id = 'login_screen';
   Duration get loginTime => const Duration(milliseconds: 2250);
 
   final _formKey = GlobalKey<FormState>();
@@ -84,12 +91,11 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Future<bool> _firebaseEmailSignIn(BuildContext context, String email, String pass) async {
+  Future<bool> _firebaseEmailSignIn(
+      BuildContext context, String email, String pass) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-              email: email,
-              password: pass);
+          .signInWithEmailAndPassword(email: email, password: pass);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -127,8 +133,8 @@ class LoginScreen extends StatelessWidget {
         ),
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
-
-            bool isAuth = await _firebaseEmailSignIn(context, _emailController.text, _passwordController.text);
+            bool isAuth = await _firebaseEmailSignIn(
+                context, _emailController.text, _passwordController.text);
 
             if (!isAuth) {
               return;
@@ -136,9 +142,11 @@ class LoginScreen extends StatelessWidget {
 
             _formKey.currentState?.save();
 
+            //Navigator.pushNamed(context, HomeScreen.id);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Home()),
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(camera: camera)),
             );
           }
         },

@@ -1,10 +1,25 @@
 // ignore_for_file: file_names
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/components/card.dart';
 import 'package:flutter_frontend/screens/camera.dart';
+import 'package:flutter_frontend/screens/inventory.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../components/constants.dart';
+
+class HomeScreen extends StatefulWidget {
+  final CameraDescription camera;
+
+  HomeScreen({
+    Key? key,
+    required this.camera,
+  }) : super(key: key);
+
+  static const String id = 'homescreen';
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
 
 class _searchBar extends StatefulWidget {
   _searchBar({Key? key}) : super(key: key);
@@ -111,22 +126,52 @@ class RecipeCard extends StatelessWidget {
   }
 }
 
-class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
-
-  @override
-  _HomeState createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
+class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  static final List<Widget> _widgetOptions = <Widget>[
-    RecipePage(),
-    RecipePage(),
-    TakePictureScreen()
-  ];
+  //static final List<Widget> _widgetOptions = <Widget>[
+  //  RecipePage(),
+  //  RecipePage(),
+  //  //RecipePage(),
+  //  //Navigator.pushNamed(context, CameraScreen.id)
+  //  //TakePictureScreen(
+  //  //    //camera: camera,
+  //  //    )
+  //];
+  //late CameraDescription camera;
+  //late Future<void> _initializeControllerFuture;
+
+  //@override
+  //void initState() {
+  //  // TODO: implement initState
+  //  super.initState();
+  //  availableCameras().then((availableCameras) {
+  //    final cameras = availableCameras;
+  //    camera = cameras.first;
+
+  //    //_controller = CameraController(
+  //    //  // Get a specific camera from the list of available cameras.
+  //    //  camera,
+  //    //  // Define the resolution to use.
+  //    //  ResolutionPreset.medium,
+  //    //);
+
+  //    //_initializeControllerFuture = _controller.initialize();
+  //  });
+  //}
 
   void _onItemTapped(int index) {
+    if (index == 0) {
+      Navigator.pushNamed(context, HomeScreen.id);
+    }
+
+    if (index == 1) {
+      Navigator.pushNamed(context, InventoryScreen.id);
+    }
+
+    if (index == 2) {
+      Navigator.pushNamed(context, CameraScreen.id);
+    }
+
     setState(() {
       _selectedIndex = index;
     });
@@ -137,9 +182,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: SafeArea(child: RecipePage()),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

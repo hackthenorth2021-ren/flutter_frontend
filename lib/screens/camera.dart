@@ -2,40 +2,76 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../providers.dart';
 
 // A screen that allows users to take a picture using a given camera.
-class TakePictureScreen extends StatefulWidget {
-  const TakePictureScreen({
+class CameraScreen extends ConsumerStatefulWidget {
+  const CameraScreen({
     Key? key,
     //required this.camera,
   }) : super(key: key);
 
-  //final CameraDescription camera;
+  static const String id = 'picture_screen';
 
   @override
-  TakePictureScreenState createState() => TakePictureScreenState();
+  CameraScreenState createState() => CameraScreenState();
 }
 
-class TakePictureScreenState extends State<TakePictureScreen> {
+class CameraScreenState extends ConsumerState<CameraScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  late CameraDescription camera;
+
+  void initCamera() async {
+    //AsyncValue<CameraDescription> camera = AsyncValue.loading();
+    AsyncValue<CameraDescription> cameraData = ref.watch(cameraProvider);
+    cameraData.when(
+        loading: () => const CircularProgressIndicator(),
+        error: (err, stack) => Text('Error: $err'),
+        data: (value) {
+          print(value);
+          camera = value;
+          _controller = CameraController(
+            // Get a specific camera from the list of available cameras.
+            camera,
+            // Define the resolution to use.
+            ResolutionPreset.medium,
+          );
+
+          // Next, initialize the controller. This returns a Future.
+          _initializeControllerFuture = _controller.initialize();
+        });
+
+    //_controller = CameraController(
+    //  // Get a specific camera from the list of available cameras.
+    //  camera,
+    //  // Define the resolution to use.
+    //  ResolutionPreset.medium,
+    //);
+
+    //// Next, initialize the controller. This returns a Future.
+    //_initializeControllerFuture = _controller.initialize();
+  }
 
   @override
   void initState() {
     super.initState();
-    availableCameras().then((availableCameras) {
-      final cameras = availableCameras;
-      final camera = cameras.first;
+    initCamera();
 
-      _controller = CameraController(
-        // Get a specific camera from the list of available cameras.
-        camera,
-        // Define the resolution to use.
-        ResolutionPreset.medium,
-      );
+    //ref.read(cameraProvider).data;
+    // To display the current output from the Camera,
+    // create a CameraController.
+    //_controller = CameraController(
+    //  // Get a specific camera from the list of available cameras.
+    //  ref.read(cameraProvider).data,
+    //  // Define the resolution to use.
+    //  ResolutionPreset.medium,
+    //);
 
-      _initializeControllerFuture = _controller.initialize();
-    });
+    //// Next, initialize the controller. This returns a Future.
+    //_initializeControllerFuture = _controller.initialize();
   }
 
   @override
@@ -47,9 +83,10 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Fill this out in the next steps.
     return Scaffold(
-      appBar: AppBar(title: const Text('Take a picture')),
+      appBar: AppBar(
+        title: const Text('Take a picture'),
+      ),
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
@@ -58,6 +95,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
+            print(snapshot);
             return CameraPreview(_controller);
           } else {
             // Otherwise, display a loading indicator.
