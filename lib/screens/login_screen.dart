@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:email_validator/email_validator.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'home.dart';
 
 const kPrussian = Color(0xFF12263A);
@@ -24,6 +26,7 @@ class LoginScreen extends StatelessWidget {
 
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
 
   Widget _buildEmail() {
     return Container(
@@ -33,6 +36,7 @@ class LoginScreen extends StatelessWidget {
             //contentPadding: const EdgeInsets.all(0),
             isDense: true,
             hintText: "Email"),
+        controller: _emailController,
         validator: (value) => !EmailValidator.validate(value ?? '')
             ? "Please enter a valid email"
             : null,
@@ -51,11 +55,59 @@ class LoginScreen extends StatelessWidget {
           hintText: 'Password',
         ),
         controller: _passwordController,
-        validator: (value) => value!.length <= 6
+        validator: (value) => value!.length < 6
             ? "Password must be 6 or more characters in length"
             : null,
       ),
     );
+  }
+
+  Widget _buildPopupDialog(BuildContext context, String msg) {
+    return new AlertDialog(
+      title: const Text('Popup example'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(msg),
+        ],
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Close'),
+        ),
+      ],
+    );
+  }
+
+  Future<bool> _firebaseEmailSignIn(BuildContext context, String email, String pass) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: email,
+              password: pass);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) =>
+              _buildPopupDialog(context, 'No user found for that email.'),
+        );
+        return false;
+      } else if (e.code == 'wrong-password') {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => _buildPopupDialog(
+                context, 'Wrong password provided for that user.'));
+        return false;
+      }
+    }
+    return true;
   }
 
   Widget _buildSignUpButton(BuildContext context) {
@@ -71,10 +123,17 @@ class LoginScreen extends StatelessWidget {
           backgroundColor: MaterialStateProperty.all(kPrussian),
         ),
         child: const Text(
-          "Login",
+          "LOGIN",
         ),
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
+
+            bool isAuth = await _firebaseEmailSignIn(context, _emailController.text, _passwordController.text);
+
+            if (!isAuth) {
+              return;
+            }
+
             _formKey.currentState?.save();
 
             Navigator.push(
@@ -122,21 +181,29 @@ class LoginScreen extends StatelessWidget {
             _buildPassword(),
             //_buildConfirmPassword(),
             _buildSignUpButton(context),
-            TextButton(
-                style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.all(kPrussian),
-                ),
-                onPressed: () => {},
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('Login with  '),
-                      FaIcon(FontAwesomeIcons.google)
-                    ])),
+            _buildGLogin(),
           ],
         ),
       ),
     ));
+  }
+}
+
+class _buildGLogin extends StatelessWidget {
+  const _buildGLogin({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+          foregroundColor: MaterialStateProperty.all(kPrussian),
+        ),
+        onPressed: () => {},
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [Text('Login with  '), FaIcon(FontAwesomeIcons.google)]));
   }
 }
