@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/components/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class _searchBarInventory extends StatefulWidget {
   _searchBarInventory({Key? key}) : super(key: key);
@@ -45,8 +49,9 @@ class _searchBarInventoryState extends State<_searchBarInventory> {
                   //margin: EdgeInsets.only(right: 500),
                   width: MediaQuery.of(context).size.width - 140,
                   child: TextField(
-                    decoration: new InputDecoration(
+                    decoration: InputDecoration(
                       hintText: 'Search inventory',
+                      hintStyle: kHintStyle,
                       border: InputBorder.none,
                     ),
                     maxLines: 1,
@@ -69,7 +74,7 @@ class InventoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         height: 40,
-        margin: EdgeInsets.only(left: 30, top: 8),
+        margin: EdgeInsets.only(left: 30, top: 5, bottom: 5),
         child: Row(
           //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -78,11 +83,19 @@ class InventoryCard extends StatelessWidget {
               fit: BoxFit.scaleDown,
             ),
             Container(
-              margin: EdgeInsets.only(left: 8),
+              margin: EdgeInsets.only(left: 9),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text('Apple'), Text("Expires in 3 days")],
+                children: [
+                  Text('Apple',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      )),
+                  Text("Expires in 3 days",
+                      style: TextStyle(color: Colors.orange))
+                ],
               ),
             ),
             Expanded(
@@ -91,7 +104,11 @@ class InventoryCard extends StatelessWidget {
                   Positioned(
                       right: 20,
                       child: IconButton(
-                          onPressed: () {}, icon: Icon(FontAwesomeIcons.times)))
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.close,
+                            color: Colors.orange,
+                          )))
                 ],
               ),
             )
@@ -114,19 +131,32 @@ class InventoryScreen extends StatelessWidget {
           const ListTile(
             //leading: Icon(Icons.image),
             title: Text(
-              "Inventory",
+              "Your Inventory",
               style: TextStyle(
                 fontSize: 35,
                 fontWeight: FontWeight.w900,
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [_searchBarInventory(), Text('Order by')],
+          Container(
+            margin: EdgeInsets.only(bottom: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [_searchBarInventory(), Text('Order by')],
+            ),
           ),
-          InventoryCard(),
+          Expanded(
+            child: ListView.separated(
+                itemBuilder: (context, index) {
+                  return InventoryCard();
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+                itemCount: 5),
+          )
+          //InventoryCard(),
         ],
       ),
     );

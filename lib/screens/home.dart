@@ -52,8 +52,9 @@ class __searchBarState extends State<_searchBar> {
                   //margin: EdgeInsets.only(right: 500),
                   width: MediaQuery.of(context).size.width - 80,
                   child: TextField(
-                    decoration: new InputDecoration(
+                    decoration: InputDecoration(
                       hintText: 'Search recipe',
+                      hintStyle: kHintStyle,
                       border: InputBorder.none,
                     ),
                     maxLines: 1,
@@ -200,7 +201,7 @@ class _RecipePageState extends State<RecipePage> {
             const ListTile(
               //leading: Icon(Icons.image),
               title: Text(
-                "Hello Douglas",
+                "Hi Douglas",
                 style: TextStyle(
                   fontSize: 35,
                   fontWeight: FontWeight.w900,
