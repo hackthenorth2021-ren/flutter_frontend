@@ -1,16 +1,32 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/screens/home.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
 import 'screens/login_screen.dart';
 
-void main() {
-  runApp(App());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Obtain a list of the available cameras on the device.
+  final cameras = await availableCameras();
+
+  // Get a specific camera from the list of available cameras.
+  final firstCamera = cameras.first;
+
+  runApp(App(camera: firstCamera));
 }
 
 class App extends StatefulWidget {
-  // Create the initialization Future outside of `build`:
+  const App({
+    Key? key,
+    required this.camera,
+  }) : super(key: key);
+
+  final CameraDescription camera;
+
   @override
   _AppState createState() => _AppState();
 }
@@ -33,7 +49,7 @@ class _AppState extends State<App> {
 
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
-          return const MyApp();
+          return MyApp(camera: widget.camera);
         }
 
         // Otherwise, show something whilst waiting for initialization to complete
@@ -44,7 +60,12 @@ class _AppState extends State<App> {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({
+    Key? key,
+    required this.camera,
+  }) : super(key: key);
+
+  final CameraDescription camera;
 
   // This widget is the root of your application.
   @override
@@ -57,7 +78,8 @@ class MyApp extends StatelessWidget {
             Theme.of(context).textTheme,
           ),
           backgroundColor: Colors.white),
-      home: LoginScreen(),
+      //home: LoginScreen(camera: camera),
+      home: HomeScreen(camera: camera)
     );
   }
 }

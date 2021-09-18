@@ -7,10 +7,10 @@ import 'package:camera/camera.dart';
 class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({
     Key? key,
-    //required this.camera,
+    required this.camera,
   }) : super(key: key);
 
-  //final CameraDescription camera;
+  final CameraDescription camera;
 
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
@@ -23,19 +23,19 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   void initState() {
     super.initState();
-    availableCameras().then((availableCameras) {
-      final cameras = availableCameras;
-      final camera = cameras.first;
+    //availableCameras().then((availableCameras) {
+    //  //final cameras = availableCameras;
+    //  //final camera = cameras.first;
 
-      _controller = CameraController(
-        // Get a specific camera from the list of available cameras.
-        camera,
-        // Define the resolution to use.
-        ResolutionPreset.medium,
-      );
+    //});
+    _controller = CameraController(
+      // Get a specific camera from the list of available cameras.
+      widget.camera,
+      // Define the resolution to use.
+      ResolutionPreset.low,
+    );
 
-      _initializeControllerFuture = _controller.initialize();
-    });
+    _initializeControllerFuture = _controller.initialize();
   }
 
   @override
@@ -78,6 +78,10 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             // where it was saved.
             final image = await _controller.takePicture();
 
+            var file = File(image.path);
+
+            print(file.lengthSync());
+
             // If the picture was taken, display it on a new screen.
             await Navigator.of(context).push(
               MaterialPageRoute(
@@ -109,7 +113,9 @@ class DisplayPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Display the Picture')),
+      appBar: AppBar(
+          title: const Text('Display the Picture'),
+          automaticallyImplyLeading: false),
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
       body: Image.file(File(imagePath)),

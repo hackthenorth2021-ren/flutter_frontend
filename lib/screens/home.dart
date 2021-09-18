@@ -1,8 +1,10 @@
 // ignore_for_file: file_names
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/components/card.dart';
 import 'package:flutter_frontend/screens/camera.dart';
+import 'package:flutter_frontend/screens/inventory.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../components/constants.dart';
 
@@ -17,7 +19,7 @@ class __searchBarState extends State<_searchBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 10),
+      margin: EdgeInsets.only(top: 10, bottom: 10),
       height: 36,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -51,7 +53,7 @@ class __searchBarState extends State<_searchBar> {
                   width: MediaQuery.of(context).size.width - 80,
                   child: TextField(
                     decoration: new InputDecoration(
-                      hintText: 'Search Recipe',
+                      hintText: 'Search recipe',
                       border: InputBorder.none,
                     ),
                     maxLines: 1,
@@ -75,7 +77,7 @@ class RecipeCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.all(5),
       child: ReusableCard(
-        colour: kIsabel,
+        colour: kOpal,
         cardChild: Column(
           children: [
             AspectRatio(
@@ -111,20 +113,36 @@ class RecipeCard extends StatelessWidget {
   }
 }
 
-class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({
+    Key? key,
+    required this.camera,
+  }) : super(key: key);
+
+  final CameraDescription camera;
 
   @override
-  _HomeState createState() => _HomeState();
+  _HomeScreenState createState() => _HomeScreenState(camera);
 }
 
-class _HomeState extends State<Home> {
+class _HomeScreenState extends State<HomeScreen> {
+  //int _selectedIndex = 0;
+  //static final List<Widget> _widgetOptions = <Widget>[
+  //  RecipePage(),
+  //  RecipePage(),
+  //  TakePictureScreen(camera: widget.camera)
+  //];
   int _selectedIndex = 0;
-  static final List<Widget> _widgetOptions = <Widget>[
-    RecipePage(),
-    RecipePage(),
-    TakePictureScreen()
-  ];
+  List<Widget> _widgetOptions = [];
+
+  _HomeScreenState(CameraDescription camera) {
+    //print(camera);
+    _widgetOptions = <Widget>[
+      RecipePage(),
+      InventoryScreen(),
+      TakePictureScreen(camera: camera)
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
