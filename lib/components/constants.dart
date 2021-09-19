@@ -11,7 +11,7 @@ const kHintStyle = TextStyle(fontWeight: FontWeight.w300, fontFamily: 'roboto');
 const kMenuText = TextStyle(
   fontSize: 24,
   fontWeight: FontWeight.w100,
-  color: kOpal,
+  color: kPrussian,
 );
 const kTitleText = TextStyle(
   fontSize: 35,
@@ -19,4 +19,6 @@ const kTitleText = TextStyle(
 );
 
 const endpoint = '10.0.2.2:3000';
-const user = {'user': 'ww@hotmail.com'};
+const user = {'user': 'pinkguy@hotmail.com'};
+
+const lightfont = TextStyle(fontWeight: FontWeight.w300);

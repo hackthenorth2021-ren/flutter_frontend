@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,9 @@ import 'package:flutter_frontend/screens/scanned_food.dart';
 import 'loading_image_screen.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+
+import 'package:dio/dio.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
@@ -63,7 +67,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
+            return Center(child: CameraPreview(_controller));
           } else {
             // Otherwise, display a loading indicator.
             return const Center(child: CircularProgressIndicator());
@@ -119,10 +123,10 @@ class DisplayPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBGreen,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-          backgroundColor: kBGreen,
-          title: const Center(child: Text('Display the Picture')),
+          backgroundColor: kPrussian,
+          title: Text('Display the Picture'),
           automaticallyImplyLeading: false),
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
@@ -140,7 +144,7 @@ class DisplayPictureScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TextButton(
+                  OutlinedButton(
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -148,19 +152,69 @@ class DisplayPictureScreen extends StatelessWidget {
                         'Go back',
                         style: kMenuText,
                       )),
-                  TextButton(
-                      onPressed: () {
+                  OutlinedButton(
+                      onPressed: () async {
+                        var dio = Dio();
+                        var formData = FormData.fromMap({
+                          'user': 'pinkguy@hotmail.com',
+                          'receipt': await MultipartFile.fromFile(imagePath,
+                              filename: 'upload.jpg'),
+                        });
+                        //var response = await dio.post('${endpoint}/api/v1/inventory/process-receipt', data: formData);
+
                         // call api stuff\
-                        final uri = Uri.http(
-                            endpoint, '/api/v1/', user);
-                        http.post(uri, body: {
-                          
+                        //final postUri = Uri.http(endpoint,
+                        //    '/api/v1/inventory/process-receipt', user);
+
+                        ////var postUri = Uri.parse("<APIUrl>");
+                        //var request = http.MultipartRequest("POST", postUri);
+                        //request.fields['user'] = 'pinkguy@hotmail.com';
+                        //request.files.add(http.MultipartFile.fromBytes(
+                        //    'receipt',
+                        //    await File.fromUri(Uri.parse(imagePath))
+                        //        .readAsBytes(),
+                        //    contentType: MediaType('image', 'jpeg')));
+
+                        print('sedning');
+                        print(formData);
+
+                        dio
+                            .post(
+                                'http://${endpoint}/api/v1/inventory/process-receipt',
+                                data: formData,
+                                options:
+                                    Options(contentType: 'application/json'))
+                            .then((response) {
+                          if (response.statusCode == 200) {
+                            print("Uploaded!");
+                            print(response.data);
+
+                            try {
+                              List<Map<dynamic, dynamic>> data = response.data;
+                              print(data);
+                            } catch (e) {
+                              return Center(child: Text('Error, there is no text', style: kTitleText));
+                            }
+
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ScannedFoodScreen(map: response.data)));
+                          }
                         });
 
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ScannedFoodScreen()));
+                        //http.post(
+                        //  uri,
+                        //  body: jsonEncode(<String, String>{
+                        //    'receipt': Image.file(File(imagePath)),
+                        //  }),
+                        //);
+
+                        //Navigator.push(
+                        //    context,
+                        //    MaterialPageRoute(
+                        //        builder: (context) => ScannedFoodScreen()));
                       },
                       child: Text(
                         'Export',

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/components/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -29,20 +30,28 @@ class ReceipeScreen extends StatelessWidget {
               Positioned(
                   top: 180,
                   child: Container(
-                    margin: EdgeInsets.all(30),
+                    margin: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Chicken Soup', style: kTitleText),
-                        Divider(
-                          color: Colors.black,
-                          thickness: 10,
+                        Text('Wonton Soup', style: kTitleText),
+                        Center(
+                          child: Container(
+                            margin: EdgeInsets.only(top: 20, bottom: 15),
+                            width: MediaQuery.of(context).size.width - 60,
+                            height: 1,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Color(0xffd7d7d7),
+                              ),
+                            ),
+                          ),
                         ),
                         Text('Ingredients', style: TextStyle(fontSize: 18)),
                         Container(
                             //color: Colors.white,
                             height: 40,
-                            margin: EdgeInsets.symmetric(vertical: 10),
+                            margin: EdgeInsets.only(top: 10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               color: Colors.white,
@@ -55,18 +64,22 @@ class ReceipeScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            width: MediaQuery.of(context).size.width - 65,
+                            width: MediaQuery.of(context).size.width - 60,
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Container(
-                                    child: Text('Apple'),
+                                    child: Text('Apple', style: lightfont),
                                     margin: EdgeInsets.only(left: 10),
                                   ),
                                 ),
-                                Text('x2'),
                                 Container(
-                                  margin: EdgeInsets.only(left: 5),
+                                  child: Text('x2', style: lightfont),
+                                  margin: EdgeInsets.only(right: 8),
+                                ),
+                                VerticalDivider(),
+                                Container(
+                                  margin: EdgeInsets.only(right: 8),
                                   child: IconButton(
                                     icon: Icon(FontAwesomeIcons.parachuteBox),
                                     onPressed: () {},
@@ -75,9 +88,11 @@ class ReceipeScreen extends StatelessWidget {
                               ],
                             )),
                         Container(
-                            margin: EdgeInsets.only(top: 10),
+                            margin: EdgeInsets.only(top: 20, bottom: 10),
                             child: Text('Directions',
-                                style: TextStyle(fontSize: 18)))
+                                style: TextStyle(fontSize: 18))),
+                        Text('1.', style: lightfont),
+                        Text('2.', style: lightfont)
                       ],
                     ),
                   )),

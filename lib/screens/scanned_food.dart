@@ -6,7 +6,72 @@ import 'dart:math' as math;
 
 import 'package:flutter_frontend/components/constants.dart';
 
+class scannedItem {
+  final String name;
+  final DateTime? expiryDate;
+
+  scannedItem({
+    required this.name,
+    required this.expiryDate,
+  });
+
+  factory scannedItem.fromJson(Map<dynamic, dynamic> json) {
+    return scannedItem(
+        name: json['name'],
+        expiryDate: json['expirydate'] != null
+            ? DateTime.parse(json['expirydate'])
+            : null);
+  }
+
+  static List<scannedItem> listFromJson(List<Map<String, dynamic>> json) {
+    var list = <scannedItem>[];
+
+    print(json);
+
+    for (var i in json) {
+      scannedItem item = scannedItem.fromJson(i);
+      list.add(item);
+    }
+    //var item = inventoryItem.fromJson(json)
+
+    return list;
+  }
+
+  //static Future<List<scannedItem>> fetchInventory() async {
+  //  final uri = Uri.http(endpoint, '/api/v1/inventory/get-inventory', user);
+
+  //  final response = await http.get(uri);
+
+  //  if (response.statusCode == 200) {
+  //    // If the server did return a 200 OK response,
+  //    // then parse the JSON.
+  //    List<inventoryItem> data = [];
+  //    print(jsonDecode(response.body));
+  //    jsonDecode(response.body).forEach((el) {
+  //      //final List<inventoryItem> sublist = el.map((val) => inventoryItem.fromJson(val)).toList();
+  //      //data.add(inventoryItem(sublist));
+  //      data.add(inventoryItem.fromJson(el));
+  //    });
+  //    //print(data);
+  //    print(data[0].name);
+
+  //    return data;
+  //  } else {
+  //    // If the server did not return a 200 OK response,
+  //    // then throw an exception.
+  //    throw Exception('Failed to load album');
+  //  }
+  //}
+}
+
 class ScannedFoodScreen extends StatefulWidget {
+  const ScannedFoodScreen({
+    Key? key,
+    required this.map,
+  }) : super(key: key);
+
+  final List<Map> map;
+
   @override
   _ScannedFoodScreenState createState() => _ScannedFoodScreenState();
 }
@@ -51,81 +116,112 @@ class _ScannedFoodScreenState extends State<ScannedFoodScreen> {
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20),
-              child: Flex(
-                direction: Axis.horizontal,
-                children: [
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(right: 20),
-                      child: Container(
-                        child: TextField(
-                            decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(10),
-                          border: InputBorder.none,
-                          hintText: 'Username',
-                        )),
-                        height: 35,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Color(0xffeeeeee),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0x3fe8e8e8),
-                              blurRadius: 45,
-                              offset: Offset(15, 20),
-                            ),
-                          ],
-                          color: Colors.white,
-                        ),
-                      ),
-                      //margin: EdgeInsets.symmetric(horizontal: 5),
-                    ),
-                    flex: 3,
-                  ),
-                  Expanded(
-                      child: Container(
-                        margin: EdgeInsets.only(right: 20),
-                        child: Container(
-                          height: 35,
-                          child: TextField(
-                            textAlignVertical: TextAlignVertical.center,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(10),
-                              border: InputBorder.none,
-                              hintText: 'Username',
-                            ),
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Color(0xffeeeeee),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0x3fe8e8e8),
-                                blurRadius: 45,
-                                offset: Offset(15, 20),
-                              ),
-                            ],
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      flex: 2),
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.close,
-                        color: Colors.orange,
-                      ))
-                ],
+              child: ListView.separated(
+                itemCount: widget.map.length,
+                itemBuilder: (context, index) {
+                  scannedItem item = scannedItem.fromJson(widget.map[index]);
+                  return RowElement(
+                    name: item.name,
+                    expiry: item.expiryDate,
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
               ),
             )
           ],
         ),
       ),
+    );
+  }
+}
+
+class RowElement extends StatelessWidget {
+  RowElement({Key? key, required this.name, required this.expiry})
+      : super(key: key);
+
+  var name;
+  var expiry;
+
+  final _nameController = TextEditingController();
+  final _expiryController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    _nameController.text = name;
+    _expiryController.text = expiry;
+
+    return Flex(
+      direction: Axis.horizontal,
+      children: [
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.only(right: 20),
+            child: Container(
+              child: TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(10),
+                    border: InputBorder.none,
+                  )),
+              height: 35,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xffeeeeee),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x3fe8e8e8),
+                    blurRadius: 45,
+                    offset: Offset(15, 20),
+                  ),
+                ],
+                color: Colors.white,
+              ),
+            ),
+            //margin: EdgeInsets.symmetric(horizontal: 5),
+          ),
+          flex: 3,
+        ),
+        Expanded(
+            child: Container(
+              margin: EdgeInsets.only(right: 20),
+              child: Container(
+                height: 35,
+                child: TextField(
+                  controller: _expiryController,
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(10),
+                    border: InputBorder.none,
+                  ),
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Color(0xffeeeeee),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x3fe8e8e8),
+                      blurRadius: 45,
+                      offset: Offset(15, 20),
+                    ),
+                  ],
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            flex: 2),
+        IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.close,
+              color: Colors.orange,
+            ))
+      ],
     );
   }
 }
