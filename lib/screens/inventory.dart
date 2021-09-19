@@ -174,7 +174,8 @@ class InventoryCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       )),
                   item.expiryDate != null
-                      ? Text(item.expiryStr, style: TextStyle(color: Colors.orange))
+                      ? Text(item.expiryStr,
+                          style: TextStyle(color: Colors.orange))
                       : Text('No expiry date',
                           style: TextStyle(color: Colors.orange))
                 ],

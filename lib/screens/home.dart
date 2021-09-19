@@ -17,12 +17,14 @@ import 'package:http/http.dart' as http;
 class recipeItem {
   final String id;
   final String name;
+  final String image;
   final List<dynamic> ingredients;
-  final List<String> directions;
+  final String directions;
 
   recipeItem({
     required this.id,
     required this.name,
+    required this.image,
     required this.ingredients,
     required this.directions,
   });
@@ -31,11 +33,12 @@ class recipeItem {
     return recipeItem(
         id: json['id'],
         name: json['name'],
-        ingredients: json['creationdate'],
+        image: json['image'],
+        ingredients: json['ingredients'],
         directions: json['directions']);
   }
 
-  static List<recipeItem> listFromJson(List<Map<String, dynamic>> json) {
+  static List<recipeItem> listFromJson(List json) {
     var list = <recipeItem>[];
 
     print(json);
@@ -44,24 +47,19 @@ class recipeItem {
       recipeItem item = recipeItem.fromJson(i);
       list.add(item);
     }
-    //var item = inventoryItem.fromJson(json)
 
     return list;
   }
 
-  static Future<List<recipeItem>> fetchInventory() async {
-    final uri = Uri.http(endpoint, '/api/v1/inventory/get-inventory', user);
+  static Future<List<recipeItem>> fetchRecipes() async {
+    final uri = Uri.http(endpoint, '/api/v1/inventory/get-recipes', user);
 
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
       List<recipeItem> data = [];
       print(jsonDecode(response.body));
       jsonDecode(response.body).forEach((el) {
-        //final List<inventoryItem> sublist = el.map((val) => inventoryItem.fromJson(val)).toList();
-        //data.add(inventoryItem(sublist));
         data.add(recipeItem.fromJson(el));
       });
       //print(data);
@@ -139,7 +137,9 @@ class __searchBarState extends State<_searchBar> {
 }
 
 class RecipeCard extends StatelessWidget {
-  const RecipeCard({Key? key}) : super(key: key);
+  const RecipeCard({Key? key, required this.item}) : super(key: key);
+
+  final recipeItem item;
 
   @override
   Widget build(BuildContext context) {
@@ -161,8 +161,8 @@ class RecipeCard extends StatelessWidget {
                 child: Card(
                   semanticContainer: true,
                   clipBehavior: Clip.antiAliasWithSaveLayer,
-                  child: Image.asset(
-                    'assets/sadge.jpg',
+                  child: Image.network(
+                    item.image,
                     fit: BoxFit.fitWidth,
                   ),
                   shape: RoundedRectangleBorder(
@@ -176,8 +176,8 @@ class RecipeCard extends StatelessWidget {
                 height: 8,
               ),
               ListTile(
-                title: Text("Chicken soup"),
-                subtitle: Text("Chicken"),
+                title: Text(item.name),
+                subtitle: Text('${item.ingredients[0]['name']}, ...'),
               ),
               SizedBox(
                 height: 8,
@@ -259,8 +259,73 @@ class RecipePage extends StatefulWidget {
 }
 
 class _RecipePageState extends State<RecipePage> {
+  var futureRecipes = recipeItem.fetchRecipes();
+
+  Widget projectWidget() {
+    return FutureBuilder(
+      builder: (context, AsyncSnapshot<List<recipeItem>> snapshot) {
+        if (snapshot.hasData) {
+          //print('project snapshot data is: ${projectSnap.data}');
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              recipeItem item = snapshot.data![index];
+              return RecipeCard(item: item);
+            },
+          );
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return CircularProgressIndicator();
+      },
+      future: futureRecipes,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    recipeItem x = recipeItem.fromJson({
+      'id': '1',
+      'name': 'Slow Cooker Pot Roast',
+      'directions':
+          "In a slow cooker, mix cream of mushroom soup, dry onion soup mix and water. Place pot roast in slow cooker and coat with soup mixture.\nCook on High setting for 3 to 4 hours, or on Low setting for 8 to 9 hours.\n",
+      "ingredients": [
+        {"name": "mushroom soup", "amount": "21.5 ounce"},
+        {"name": "onion soup", "amount": "1 ounce"},
+        {"name": "pot roast", "amount": "5/2 pounds"}
+      ],
+      'image':
+          'https://images.media-allrecipes.com/userphotos/560x315/2287775.jpg'
+    });
+
+    recipeItem y = recipeItem.fromJson({
+      'id': '2',
+      'name': 'Instant Pot® Best Beef Stew',
+      'directions':
+          "In a slow cooker, mix cream of mushroom soup, dry onion soup mix and water. Place pot roast in slow cooker and coat with soup mixture.\nCook on High setting for 3 to 4 hours, or on Low setting for 8 to 9 hours.\n",
+      "ingredients": [
+        {"name": "butter", "amount": "1 tablespoon"},
+        {"name": "onion soup", "amount": "1 ounce"},
+        {"name": "pot roast", "amount": "5/2 pounds"}
+      ],
+      'image':
+          'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fimages.media-allrecipes.com%2Fuserphotos%2F5903471.jpg&w=574&h=384&c=sc&poi=face&q=85'
+    });
+
+    recipeItem z = recipeItem.fromJson({
+      'id': '3',
+      'name': 'Spiced Pumpkin Bread',
+      'directions':
+          "In a slow cooker, mix cream of mushroom soup, dry onion soup mix and water. Place pot roast in slow cooker and coat with soup mixture.\nCook on High setting for 3 to 4 hours, or on Low setting for 8 to 9 hours.\n",
+      "ingredients": [
+        {"name": "white sugar", "amount": "1 ½ cups"},
+        {"name": "onion soup", "amount": "1 ounce"},
+        {"name": "pot roast", "amount": "5/2 pounds"}
+      ],
+      'image':
+          'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fimages.media-allrecipes.com%2Fuserphotos%2F1061065.jpg&w=272&h=272&c=sc&poi=face&q=85'
+    });
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
@@ -280,7 +345,11 @@ class _RecipePageState extends State<RecipePage> {
             Expanded(
               child: ListView(
                 //shrinkWrap: true,
-                children: [RecipeCard(), RecipeCard(), RecipeCard()],
+                children: [
+                  RecipeCard(item: x),
+                  RecipeCard(item: y),
+                  RecipeCard(item: z)
+                ],
               ),
             )
           ]),
