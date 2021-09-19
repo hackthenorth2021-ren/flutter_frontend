@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_frontend/components/constants.dart';
+import 'package:flutter_frontend/screens/scanned_food.dart';
 import 'loading_image_screen.dart';
+
+import 'package:http/http.dart' as http;
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
@@ -127,7 +130,11 @@ class DisplayPictureScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.file(File(imagePath)),
+            Container(
+              child: Image.file(File(imagePath)),
+              height: MediaQuery.of(context).size.height - 150,
+              //width: 100,
+            ),
             Expanded(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -143,11 +150,17 @@ class DisplayPictureScreen extends StatelessWidget {
                       )),
                   TextButton(
                       onPressed: () {
-                        // call api stuff
+                        // call api stuff\
+                        final uri = Uri.http(
+                            endpoint, '/api/v1/', user);
+                        http.post(uri, body: {
+                          
+                        });
+
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoadingScreen()));
+                                builder: (context) => ScannedFoodScreen()));
                       },
                       child: Text(
                         'Export',

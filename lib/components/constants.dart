@@ -13,3 +13,10 @@ const kMenuText = TextStyle(
   fontWeight: FontWeight.w100,
   color: kOpal,
 );
+const kTitleText = TextStyle(
+  fontSize: 35,
+  fontWeight: FontWeight.w900,
+);
+
+const endpoint = '10.0.2.2:3000';
+const user = {'user': 'ww@hotmail.com'};

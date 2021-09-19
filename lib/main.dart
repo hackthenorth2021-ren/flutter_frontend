@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/screens/home.dart';
+import 'package:flutter_frontend/screens/scanned_food.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -80,6 +81,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white),
       //home: LoginScreen(camera: camera),
       home: HomeScreen(camera: camera)
+      //home: ScannedFoodScreen()
     );
   }
 }

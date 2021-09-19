@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/components/card.dart';
 import 'package:flutter_frontend/screens/camera.dart';
 import 'package:flutter_frontend/screens/inventory.dart';
+import 'package:flutter_frontend/screens/recipe.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../components/constants.dart';
 
@@ -79,35 +80,43 @@ class RecipeCard extends StatelessWidget {
       margin: EdgeInsets.all(5),
       child: ReusableCard(
         colour: kOpal,
-        cardChild: Column(
-          children: [
-            AspectRatio(
-              aspectRatio: 5 / 2,
-              child: Card(
-                semanticContainer: true,
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                child: Image.asset(
-                  'assets/sadge.jpg',
-                  fit: BoxFit.fitWidth,
+        cardChild: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ReceipeScreen()),
+            );
+          },
+          child: Column(
+            children: [
+              AspectRatio(
+                aspectRatio: 5 / 2,
+                child: Card(
+                  semanticContainer: true,
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  child: Image.asset(
+                    'assets/sadge.jpg',
+                    fit: BoxFit.fitWidth,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  elevation: 5,
+                  margin: EdgeInsets.all(0),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 5,
-                margin: EdgeInsets.all(0),
               ),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            ListTile(
-              title: Text("Im gay"),
-              subtitle: Text("Kevin has gay benis"),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-          ],
+              SizedBox(
+                height: 8,
+              ),
+              ListTile(
+                title: Text("Chicken soup"),
+                subtitle: Text("Chicken"),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -202,10 +211,7 @@ class _RecipePageState extends State<RecipePage> {
               //leading: Icon(Icons.image),
               title: Text(
                 "Hi Douglas",
-                style: TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.w900,
-                ),
+                style: kTitleText,
               ),
               subtitle: Text(
                   "Vestibulum quis ligula nec neque ornare feugiat. Nunc condimentum, nunc su"),
