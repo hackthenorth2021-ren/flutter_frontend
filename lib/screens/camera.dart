@@ -196,20 +196,20 @@ class DisplayPictureScreen extends StatelessWidget {
                             //  return Center(child: Text('Error, there is no text', style: kTitleText));
                             //}
 
-                            //  Navigator.push(
-                            //      context,
-                            //      MaterialPageRoute(
-                            //          builder: (context) =>
-                            //              ScannedFoodScreen(map: <Map>[
-                            //                {'name': 'Apple', 'expiryduration': '7'}
-                            //              ])));
-                            //}
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        ScannedFoodScreen(map: response.data)));
-                          }
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ScannedFoodScreen(map: <Map>[
+                                            {'name': 'Apple', 'expiryduration': '7'}
+                                          ])));
+                            }
+                          //  Navigator.push(
+                          //      context,
+                          //      MaterialPageRoute(
+                          //          builder: (context) =>
+                          //              ScannedFoodScreen(map: response.data)));
+                          //}
                         });
 
                         //http.post(

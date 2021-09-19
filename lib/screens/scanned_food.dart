@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/components/card.dart';
 import 'dart:math' as math;
 
 import 'package:flutter_frontend/components/constants.dart';
+import 'package:http/http.dart' as http;
 
 class scannedItem {
   final String name;
@@ -15,6 +18,11 @@ class scannedItem {
     required this.name,
     required this.expiryduration,
   });
+
+  static String toJson(scannedItem item) {
+    return {'name': item.name, 'expiryduration': item.expiryduration}
+        .toString();
+  }
 
   factory scannedItem.fromJson(Map<dynamic, dynamic> json) {
     return scannedItem(
@@ -88,27 +96,45 @@ class _ScannedFoodScreenState extends State<ScannedFoodScreen> {
           //  'name':'Apple', 'expiryDuration':'7'
           //});
 
-          List<dynamic> postData = widget.map;
+          //List<dynamic> postData = widget.map;
+
+          List<String> chckList =
+              widget.map.map((e) => json.encode(e)).toList();
+          String strBody = json.encode(chckList);
 
           print('sedning');
-          print(postData);
+          print(chckList);
+          print(strBody);
+          print('[{"name": "Apple", "expiryduration": "7"}]');
 
-          dio
-              .post(
-                  'http://${endpoint}/api/v1/inventory/add-food?user=pinkguy@hotmail.com',
-                  data: Stream.fromIterable(postData.map((e) => [e])),
-                  options: Options(
-                    headers: {
-                      Headers.contentLengthHeader:
-                          postData.length, // set content-length
-                    },
-                  ))
-              .then((response) {
-            if (response.statusCode == 200) {
-              print("Uploaded!");
-              print(response.data);
-            }
-          });
+          final uri = Uri.http(endpoint, '/api/v1/inventory/add-food', user);
+
+          final response = await http.post(
+            uri,
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: chckList.toString(),
+          );
+          if (response.statusCode == 200) {
+            String data = response.body;
+            return jsonDecode(data);
+          } else {
+            print(response.statusCode);
+          }
+
+          //dio
+          //    .post(
+          //  'http://${endpoint}/api/v1/inventory/add-food?user=pinkguy@hotmail.com',
+          //  data: strBody,
+          //)
+          //    .then((response) {
+          //  if (response.statusCode == 200) {
+          //    print("Uploaded!");
+          //    print(response.data);
+          //  }
+          //});
         },
         child: Icon(Icons.add),
       ),
