@@ -12,21 +12,21 @@ import 'package:http/http.dart' as http;
 
 class scannedItem {
   final String name;
-  final String expiryduration;
+  final String? expiryduration;
 
   scannedItem({
     required this.name,
     required this.expiryduration,
   });
 
-  static String toJson(scannedItem item) {
-    return {'name': item.name, 'expiryduration': item.expiryduration}
-        .toString();
-  }
+  //static String toJson(scannedItem item) {
+  //  return {'name': item.name, 'expiryduration': item.expiryduration}
+  //      .toString();
+  //}
 
   factory scannedItem.fromJson(Map<dynamic, dynamic> json) {
     return scannedItem(
-        name: json['name'], expiryduration: json['expiryduration']);
+        name: json['name'], expiryduration: json['expiry']);
   }
 
   static List<scannedItem> listFromJson(List<Map<String, dynamic>> json) {
@@ -76,7 +76,7 @@ class ScannedFoodScreen extends StatefulWidget {
     required this.map,
   }) : super(key: key);
 
-  final List<Map> map;
+  final List<dynamic> map;
 
   @override
   _ScannedFoodScreenState createState() => _ScannedFoodScreenState();
@@ -104,8 +104,8 @@ class _ScannedFoodScreenState extends State<ScannedFoodScreen> {
 
           print('sedning');
           print(chckList);
-          print(strBody);
-          print('[{"name": "Apple", "expiryduration": "7"}]');
+          //print(strBody);
+          //print('[{"name": "Apple", "expiryduration": "7"}]');
 
           final uri = Uri.http(endpoint, '/api/v1/inventory/add-food', user);
 
@@ -251,11 +251,12 @@ class RowElement extends StatelessWidget {
               child: Container(
                 height: 35,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "$expiry days",
-                  ),
-                ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: (expiry != null || expiry != '')
+                        ? Text(
+                            expiry,
+                          )
+                        : Text("N/A")),
                 //TextField(
                 //  controller: _expiryController,
                 //  textAlignVertical: TextAlignVertical.center,

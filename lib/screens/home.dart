@@ -1,13 +1,80 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/components/card.dart';
 import 'package:flutter_frontend/screens/camera.dart';
 import 'package:flutter_frontend/screens/inventory.dart';
+
 import 'package:flutter_frontend/screens/recipe.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../components/constants.dart';
+
+import 'package:http/http.dart' as http;
+
+class recipeItem {
+  final String id;
+  final String name;
+  final List<dynamic> ingredients;
+  final List<String> directions;
+
+  recipeItem({
+    required this.id,
+    required this.name,
+    required this.ingredients,
+    required this.directions,
+  });
+
+  factory recipeItem.fromJson(Map<String, dynamic> json) {
+    return recipeItem(
+        id: json['id'],
+        name: json['name'],
+        ingredients: json['creationdate'],
+        directions: json['directions']);
+  }
+
+  static List<recipeItem> listFromJson(List<Map<String, dynamic>> json) {
+    var list = <recipeItem>[];
+
+    print(json);
+
+    for (var i in json) {
+      recipeItem item = recipeItem.fromJson(i);
+      list.add(item);
+    }
+    //var item = inventoryItem.fromJson(json)
+
+    return list;
+  }
+
+  static Future<List<recipeItem>> fetchInventory() async {
+    final uri = Uri.http(endpoint, '/api/v1/inventory/get-inventory', user);
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      List<recipeItem> data = [];
+      print(jsonDecode(response.body));
+      jsonDecode(response.body).forEach((el) {
+        //final List<inventoryItem> sublist = el.map((val) => inventoryItem.fromJson(val)).toList();
+        //data.add(inventoryItem(sublist));
+        data.add(recipeItem.fromJson(el));
+      });
+      //print(data);
+      print(data[0].name);
+
+      return data;
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load album');
+    }
+  }
+}
 
 class _searchBar extends StatefulWidget {
   _searchBar({Key? key}) : super(key: key);
@@ -136,17 +203,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  //int _selectedIndex = 0;
-  //static final List<Widget> _widgetOptions = <Widget>[
-  //  RecipePage(),
-  //  RecipePage(),
-  //  TakePictureScreen(camera: widget.camera)
-  //];
   int _selectedIndex = 0;
   List<Widget> _widgetOptions = [];
 
   _HomeScreenState(CameraDescription camera) {
-    //print(camera);
     _widgetOptions = <Widget>[
       RecipePage(),
       InventoryScreen(),
