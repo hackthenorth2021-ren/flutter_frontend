@@ -189,13 +189,21 @@ class DisplayPictureScreen extends StatelessWidget {
                             print("Uploaded!");
                             print(response.data);
 
-                            try {
-                              List<Map<dynamic, dynamic>> data = response.data;
-                              print(data);
-                            } catch (e) {
-                              return Center(child: Text('Error, there is no text', style: kTitleText));
-                            }
+                            //try {
+                            //  List<Map<dynamic, dynamic>> data = response.data;
+                            //  print(data);
+                            //} catch (e) {
+                            //  return Center(child: Text('Error, there is no text', style: kTitleText));
+                            //}
 
+                            //  Navigator.push(
+                            //      context,
+                            //      MaterialPageRoute(
+                            //          builder: (context) =>
+                            //              ScannedFoodScreen(map: <Map>[
+                            //                {'name': 'Apple', 'expiryduration': '7'}
+                            //              ])));
+                            //}
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

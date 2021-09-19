@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/components/card.dart';
 import 'dart:math' as math;
@@ -8,19 +9,16 @@ import 'package:flutter_frontend/components/constants.dart';
 
 class scannedItem {
   final String name;
-  final DateTime? expiryDate;
+  final String expiryduration;
 
   scannedItem({
     required this.name,
-    required this.expiryDate,
+    required this.expiryduration,
   });
 
   factory scannedItem.fromJson(Map<dynamic, dynamic> json) {
     return scannedItem(
-        name: json['name'],
-        expiryDate: json['expirydate'] != null
-            ? DateTime.parse(json['expirydate'])
-            : null);
+        name: json['name'], expiryduration: json['expiryduration']);
   }
 
   static List<scannedItem> listFromJson(List<Map<String, dynamic>> json) {
@@ -79,7 +77,41 @@ class ScannedFoodScreen extends StatefulWidget {
 class _ScannedFoodScreenState extends State<ScannedFoodScreen> {
   @override
   Widget build(BuildContext context) {
+    print(widget.map);
+
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          var dio = Dio();
+          //var formData = FormData.fromMap({
+          //  'name':'Apple', 'expiryDuration':'7'
+          //});
+
+          List<dynamic> postData = widget.map;
+
+          print('sedning');
+          print(postData);
+
+          dio
+              .post(
+                  'http://${endpoint}/api/v1/inventory/add-food?user=pinkguy@hotmail.com',
+                  data: Stream.fromIterable(postData.map((e) => [e])),
+                  options: Options(
+                    headers: {
+                      Headers.contentLengthHeader:
+                          postData.length, // set content-length
+                    },
+                  ))
+              .then((response) {
+            if (response.statusCode == 200) {
+              print("Uploaded!");
+              print(response.data);
+            }
+          });
+        },
+        child: Icon(Icons.add),
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
@@ -114,22 +146,24 @@ class _ScannedFoodScreenState extends State<ScannedFoodScreen> {
                 ],
               ),
             ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: ListView.separated(
-                itemCount: widget.map.length,
-                itemBuilder: (context, index) {
-                  scannedItem item = scannedItem.fromJson(widget.map[index]);
-                  return RowElement(
-                    name: item.name,
-                    expiry: item.expiryDate,
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return Divider();
-                },
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                child: ListView.separated(
+                  itemCount: widget.map.length,
+                  itemBuilder: (context, index) {
+                    scannedItem item = scannedItem.fromJson(widget.map[index]);
+                    return RowElement(
+                      name: item.name,
+                      expiry: item.expiryduration,
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider();
+                  },
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -144,13 +178,13 @@ class RowElement extends StatelessWidget {
   var name;
   var expiry;
 
-  final _nameController = TextEditingController();
-  final _expiryController = TextEditingController();
+  //final _nameController = TextEditingController();
+  //final _expiryController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    _nameController.text = name;
-    _expiryController.text = expiry;
+    //_nameController.text = name;
+    //_expiryController.text = expiry;
 
     return Flex(
       direction: Axis.horizontal,
@@ -159,12 +193,12 @@ class RowElement extends StatelessWidget {
           child: Container(
             margin: EdgeInsets.only(right: 20),
             child: Container(
-              child: TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(10),
-                    border: InputBorder.none,
-                  )),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  name,
+                ),
+              ),
               height: 35,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -190,14 +224,20 @@ class RowElement extends StatelessWidget {
               margin: EdgeInsets.only(right: 20),
               child: Container(
                 height: 35,
-                child: TextField(
-                  controller: _expiryController,
-                  textAlignVertical: TextAlignVertical.center,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(10),
-                    border: InputBorder.none,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "$expiry days",
                   ),
                 ),
+                //TextField(
+                //  controller: _expiryController,
+                //  textAlignVertical: TextAlignVertical.center,
+                //  decoration: InputDecoration(
+                //    contentPadding: EdgeInsets.all(10),
+                //    border: InputBorder.none,
+                //  ),
+                //),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
